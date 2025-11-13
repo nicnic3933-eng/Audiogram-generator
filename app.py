@@ -46,14 +46,16 @@ color_scheme = st.selectbox("Color Scheme", ["Red & Blue (Default)", "Black"], i
 use_black = (color_scheme == "Black")
 
 # ================================
-# SESSION STATE: SHARED UNMASKED BC VALUES
+# SESSION STATE: SHARED UNMASKED BC VALUES + LAST KNOWN
 # ================================
 
 if "bc_u" not in st.session_state:
-    st.session_state.bc_u = {f: 10 for f in BC_FREQS}  # default = 10
+    st.session_state.bc_u = {f: 10 for f in BC_FREQS}
+if "bc_u_last" not in st.session_state:
+    st.session_state.bc_u_last = {f: 10 for f in BC_FREQS}
 
 # ================================
-# INPUTS – BOTH EARS READ/WRITE TO SAME session_state.bc_u
+# INPUTS – WITH INSTANT SYNC VIA RERUN ON CHANGE
 # ================================
 
 col1, col2 = st.columns(2)
@@ -67,7 +69,6 @@ with col1:
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
         with c1:
-            # Read from shared state
             val = st.number_input(
                 f"unmasked {f} Hz",
                 -10, 120,
@@ -75,8 +76,11 @@ with col1:
                 5,
                 key=f"r_u_{f}"
             )
-            # Update shared state
-            st.session_state.bc_u[f] = val
+            # Detect change
+            if val != st.session_state.bc_u_last[f]:
+                st.session_state.bc_u[f] = val
+                st.session_state.bc_u_last[f] = val
+                st.experimental_rerun()  # ← Forces both inputs to update
             right_bc_u[f] = val
         with c2:
             right_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"r_m_{f}")
@@ -97,7 +101,10 @@ with col2:
                 5,
                 key=f"l_u_{f}"
             )
-            st.session_state.bc_u[f] = val  # sync
+            if val != st.session_state.bc_u_last[f]:
+                st.session_state.bc_u[f] = val
+                st.session_state.bc_u_last[f] = val
+                st.experimental_rerun()
             left_bc_u[f] = val
         with c2:
             left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
