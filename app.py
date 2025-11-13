@@ -1,6 +1,6 @@
 # app.py
 # Audiogram Generator – Web App
-# AC 250/500/1k: +2px right shift | Masked BC: 8px offset
+# AC 250/500/1k: +1px left shift | Masked BC: 8px offset
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -19,9 +19,9 @@ BC_FREQS = [500, 1000, 2000, 4000]
 RIGHT_X_BASE = {250: 133, 500: 160, 1000: 193, 2000: 228, 3000: 243, 4000: 263, 6000: 277, 8000: 298}
 LEFT_X_BASE  = {250: 458, 500: 485, 1000: 520, 2000: 554, 3000: 569, 4000: 590, 6000: 604, 8000: 626}
 
-# Apply +2px right shift to 250, 500, 1000 Hz for both ears
+# Apply +1px left shift to 250, 500, 1000 Hz for both ears
 SHIFT_FREQ = {250, 500, 1000}
-X_SHIFT = +2  # ← CHANGED FROM -3 TO +2
+X_SHIFT = -1  # ← CHANGED FROM +2 TO -1
 
 RIGHT_X = {f: RIGHT_X_BASE[f] + (X_SHIFT if f in SHIFT_FREQ else 0) for f in AC_FREQS}
 LEFT_X  = {f: LEFT_X_BASE[f]  + (X_SHIFT if f in SHIFT_FREQ else 0) for f in AC_FREQS}
