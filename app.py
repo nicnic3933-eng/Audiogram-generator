@@ -1,6 +1,6 @@
 # app.py
 # Audiogram Generator – Web App
-# Unmasked BC synchronized (no st.rerun, no warnings)
+# Unmasked BC synchronized (st.rerun on change, no warnings)
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -46,7 +46,7 @@ color_scheme = st.selectbox("Color Scheme", ["Red & Blue (Default)", "Black"], i
 use_black = (color_scheme == "Black")
 
 # ================================
-# SESSION STATE: SHARED UNMASKED BC VALUES + LAST KNOWN
+# SESSION STATE: SHARED UNMASKED BC + LAST VALUE FOR CHANGE DETECTION
 # ================================
 
 if "bc_u" not in st.session_state:
@@ -55,7 +55,7 @@ if "bc_u_last" not in st.session_state:
     st.session_state.bc_u_last = {f: 10 for f in BC_FREQS}
 
 # ================================
-# INPUTS – WITH INSTANT SYNC VIA RERUN ON CHANGE
+# INPUTS – WITH CHANGE DETECTION & RERUN
 # ================================
 
 col1, col2 = st.columns(2)
@@ -69,18 +69,11 @@ with col1:
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
         with c1:
-            val = st.number_input(
-                f"unmasked {f} Hz",
-                -10, 120,
-                st.session_state.bc_u[f],
-                5,
-                key=f"r_u_{f}"
-            )
-            # Detect change
+            val = st.number_input(f"unmasked {f} Hz", -10, 120, st.session_state.bc_u[f], 5, key=f"r_u_{f}")
             if val != st.session_state.bc_u_last[f]:
                 st.session_state.bc_u[f] = val
                 st.session_state.bc_u_last[f] = val
-                st.experimental_rerun()  # ← Forces both inputs to update
+                st.rerun()  # Refresh to sync the other ear
             right_bc_u[f] = val
         with c2:
             right_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"r_m_{f}")
@@ -94,17 +87,11 @@ with col2:
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
         with c1:
-            val = st.number_input(
-                f"unmasked {f} Hz",
-                -10, 120,
-                st.session_state.bc_u[f],
-                5,
-                key=f"l_u_{f}"
-            )
+            val = st.number_input(f"unmasked {f} Hz", -10, 120, st.session_state.bc_u[f], 5, key=f"l_u_{f}")
             if val != st.session_state.bc_u_last[f]:
                 st.session_state.bc_u[f] = val
                 st.session_state.bc_u_last[f] = val
-                st.experimental_rerun()
+                st.rerun()  # Refresh to sync the other ear
             left_bc_u[f] = val
         with c2:
             left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
