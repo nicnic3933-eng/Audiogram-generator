@@ -1,6 +1,6 @@
 # app.py
 # Audiogram Generator – Web App
-# FINAL PIXEL-PERFECT TICK POSITIONS – NO EXTRA FEATURES
+# Unmasked BC synchronized between ears
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -46,7 +46,14 @@ color_scheme = st.selectbox("Color Scheme", ["Red & Blue (Default)", "Black"], i
 use_black = (color_scheme == "Black")
 
 # ================================
-# INPUTS
+# SESSION STATE FOR SYNC
+# ================================
+
+if 'sync_bc_u' not in st.session_state:
+    st.session_state.sync_bc_u = {f: 10 for f in BC_FREQS}  # default 10
+
+# ================================
+# INPUTS WITH SYNC
 # ================================
 
 col1, col2 = st.columns(2)
@@ -59,8 +66,18 @@ with col1:
     right_bc_m = {}
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
-        with c1: right_bc_u[f] = st.number_input(f"unmasked {f} Hz", -10, 120, 10, 5, key=f"r_u_{f}")
-        with c2: right_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"r_m_{f}")
+        with c1:
+            val = st.number_input(
+                f"unmasked {f} Hz",
+                -10, 120,
+                st.session_state.sync_bc_u[f],
+                5,
+                key=f"r_u_{f}",
+                on_change=lambda f=f: sync_unmasked(f, 'right')
+            )
+            right_bc_u[f] = val
+        with c2:
+            right_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"r_m_{f}")
 
 with col2:
     st.subheader("Left Ear")
@@ -70,8 +87,32 @@ with col2:
     left_bc_m = {}
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
-        with c1: left_bc_u[f] = st.number_input(f"unmasked {f} Hz", -10, 120, 10, 5, key=f"l_u_{f}")
-        with c2: left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
+        with c1:
+            val = st.number_input(
+                f"unmasked {f} Hz",
+                -10, 120,
+                st.session_state.sync_bc_u[f],
+                5,
+                key=f"l_u_{f}",
+                on_change=lambda f=f: sync_unmasked(f, 'left')
+            )
+            left_bc_u[f] = val
+        with c2:
+            left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
+
+# ================================
+# SYNC FUNCTION
+# ================================
+
+def sync_unmasked(freq, source_ear):
+    """Sync unmasked BC value from source_ear to the other ear"""
+    if source_ear == 'right':
+        value = st.session_state[f"r_u_{freq}"]
+    else:
+        value = st.session_state[f"l_u_{freq}"]
+    st.session_state.sync_bc_u[freq] = value
+    # Force rerun to update the other input
+    st.rerun()
 
 # ================================
 # PLOT
@@ -126,3 +167,11 @@ st.pyplot(fig)
 # ================================
 
 buf = io.BytesIO()
+fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0)
+st.download_button("Download PNG", buf.getvalue(), "audiogram.png", "image/png")
+
+buf_pdf = io.BytesIO()
+fig.savefig(buf_pdf, format='pdf', bbox_inches='tight', pad_inches=0)
+st.download_button("Download PDF", buf_pdf.getvalue(), "audiogram.pdf", "application/pdf")
+
+st.success("Unmasked BC is synchronized between ears.")
