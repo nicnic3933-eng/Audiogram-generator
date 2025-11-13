@@ -1,6 +1,6 @@
 # app.py
 # Audiogram Generator – Web App
-# AC 250/500/1k: +1px left shift | Masked BC: 8px offset
+# FINAL PIXEL-PERFECT TICK POSITIONS – NO EXTRA FEATURES
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -15,16 +15,9 @@ GRID_FILE = "dual_audiogram_grid.png"
 AC_FREQS = [250, 500, 1000, 2000, 3000, 4000, 6000, 8000]
 BC_FREQS = [500, 1000, 2000, 4000]
 
-# X-AXIS: Base positions
-RIGHT_X_BASE = {250: 133, 500: 160, 1000: 193, 2000: 228, 3000: 243, 4000: 263, 6000: 277, 8000: 298}
-LEFT_X_BASE  = {250: 458, 500: 485, 1000: 520, 2000: 554, 3000: 569, 4000: 590, 6000: 604, 8000: 626}
-
-# Apply +1px left shift to 250, 500, 1000 Hz for both ears
-SHIFT_FREQ = {250, 500, 1000}
-X_SHIFT = -1  # ← CHANGED FROM +2 TO -1
-
-RIGHT_X = {f: RIGHT_X_BASE[f] + (X_SHIFT if f in SHIFT_FREQ else 0) for f in AC_FREQS}
-LEFT_X  = {f: LEFT_X_BASE[f]  + (X_SHIFT if f in SHIFT_FREQ else 0) for f in AC_FREQS}
+# FINAL X-COORDINATES (pixel-perfect)
+RIGHT_X = {250: 132, 500: 159, 1000: 192, 2000: 228, 3000: 243, 4000: 263, 6000: 277, 8000: 298}
+LEFT_X  = {250: 457, 500: 486, 1000: 521, 2000: 554, 3000: 569, 4000: 589, 6000: 604, 8000: 626}
 
 # Y-AXIS
 Y_SCALE = 1.42
@@ -49,11 +42,7 @@ st.title("Audiogram Generator")
 # COLOR SCHEME
 # ================================
 
-color_scheme = st.selectbox(
-    "Color Scheme",
-    ["Red & Blue (Default)", "Black"],
-    index=0
-)
+color_scheme = st.selectbox("Color Scheme", ["Red & Blue (Default)", "Black"], index=0)
 use_black = (color_scheme == "Black")
 
 # ================================
@@ -95,10 +84,8 @@ ax.set_ylim(height, 0)
 ax.axis('off')
 
 def coord(ear, f, db): 
-    x_dict = RIGHT_X if ear == 'right' else LEFT_X
-    return x_dict[f], Y_PIX[db]
+    return (RIGHT_X if ear == 'right' else LEFT_X)[f], Y_PIX[db]
 
-# Colors
 right_color = 'black' if use_black else 'red'
 left_color  = 'black' if use_black else 'blue'
 
@@ -139,11 +126,3 @@ st.pyplot(fig)
 # ================================
 
 buf = io.BytesIO()
-fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0)
-st.download_button("Download PNG", buf.getvalue(), "audiogram.png", "image/png")
-
-buf_pdf = io.BytesIO()
-fig.savefig(buf_pdf, format='pdf', bbox_inches='tight', pad_inches=0)
-st.download_button("Download PDF", buf_pdf.getvalue(), "audiogram.pdf", "application/pdf")
-
-st.success("Ready! Use buttons to download.")
