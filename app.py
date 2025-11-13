@@ -1,6 +1,6 @@
 # app.py
 # Audiogram Generator – Web App
-# Unmasked BC synchronized (st.rerun on change, no warnings)
+# FINAL PIXEL-PERFECT TICK POSITIONS – NO EXTRA FEATURES
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -46,16 +46,7 @@ color_scheme = st.selectbox("Color Scheme", ["Red & Blue (Default)", "Black"], i
 use_black = (color_scheme == "Black")
 
 # ================================
-# SESSION STATE: SHARED UNMASKED BC + LAST VALUE FOR CHANGE DETECTION
-# ================================
-
-if "bc_u" not in st.session_state:
-    st.session_state.bc_u = {f: 10 for f in BC_FREQS}
-if "bc_u_last" not in st.session_state:
-    st.session_state.bc_u_last = {f: 10 for f in BC_FREQS}
-
-# ================================
-# INPUTS – WITH CHANGE DETECTION & RERUN
+# INPUTS
 # ================================
 
 col1, col2 = st.columns(2)
@@ -68,15 +59,8 @@ with col1:
     right_bc_m = {}
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
-        with c1:
-            val = st.number_input(f"unmasked {f} Hz", -10, 120, st.session_state.bc_u[f], 5, key=f"r_u_{f}")
-            if val != st.session_state.bc_u_last[f]:
-                st.session_state.bc_u[f] = val
-                st.session_state.bc_u_last[f] = val
-                st.rerun()  # Refresh to sync the other ear
-            right_bc_u[f] = val
-        with c2:
-            right_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"r_m_{f}")
+        with c1: right_bc_u[f] = st.number_input(f"unmasked {f} Hz", -10, 120, 10, 5, key=f"r_u_{f}")
+        with c2: right_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"r_m_{f}")
 
 with col2:
     st.subheader("Left Ear")
@@ -86,15 +70,8 @@ with col2:
     left_bc_m = {}
     for f in BC_FREQS:
         c1, c2 = st.columns(2)
-        with c1:
-            val = st.number_input(f"unmasked {f} Hz", -10, 120, st.session_state.bc_u[f], 5, key=f"l_u_{f}")
-            if val != st.session_state.bc_u_last[f]:
-                st.session_state.bc_u[f] = val
-                st.session_state.bc_u_last[f] = val
-                st.rerun()  # Refresh to sync the other ear
-            left_bc_u[f] = val
-        with c2:
-            left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
+        with c1: left_bc_u[f] = st.number_input(f"unmasked {f} Hz", -10, 120, 10, 5, key=f"l_u_{f}")
+        with c2: left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
 
 # ================================
 # PLOT
@@ -106,45 +83,41 @@ ax.set_xlim(0, width)
 ax.set_ylim(height, 0)
 ax.axis('off')
 
-def coord(ear, f, db):
-    return (RIGHT_X if ear == "right" else LEFT_X)[f], Y_PIX[db]
+def coord(ear, f, db): 
+    return (RIGHT_X if ear == 'right' else LEFT_X)[f], Y_PIX[db]
 
-right_color = "black" if use_black else "red"
-left_color  = "black" if use_black else "blue"
+right_color = 'black' if use_black else 'red'
+left_color  = 'black' if use_black else 'blue'
 
 # AC
-for ear, ac, color, symbol in [("right", right_ac, right_color, "o"), ("left", left_ac, left_color, "x")]:
+for ear, ac, color, symbol in [('right', right_ac, right_color, 'o'), ('left', left_ac, left_color, 'x')]:
     xs = [coord(ear, f, ac[f])[0] for f in AC_FREQS if ac[f] is not None]
     ys = [coord(ear, f, ac[f])[1] for f in AC_FREQS if ac[f] is not None]
     if xs:
-        ax.plot(xs, ys, symbol, color=color, ms=8, mfc="none", mew=1.2)
-        ax.plot(xs, ys, "-", color=color, lw=1.0)
+        ax.plot(xs, ys, symbol, color=color, ms=8, mfc='none', mew=1.2)
+        ax.plot(xs, ys, '-', color=color, lw=1.0)
 
 # BC – Masked offset: 8px
 MASKED_OFFSET = 8
 
 for f in BC_FREQS:
     # Right
-    rm = right_bc_m.get(f)
-    ru = right_bc_u.get(f) if rm is None else None
-    rval = rm or ru
+    rm = right_bc_m[f]; ru = right_bc_u[f] if rm is None else None; rval = rm or ru
     if rval is not None:
         x, y = RIGHT_X[f], Y_PIX[rval]
         if rm is not None:
-            ax.text(x - MASKED_OFFSET, y, "[", color=right_color, fontsize=12, ha="center", va="center")
+            ax.text(x - MASKED_OFFSET, y, '[', color=right_color, fontsize=12, ha='center', va='center')
         else:
-            ax.plot(x, y, "^", color=right_color, ms=9, mew=1.5, mfc="none")
-
+            ax.plot(x, y, '^', color=right_color, ms=9, mew=1.5, mfc='none')
+    
     # Left
-    lm = left_bc_m.get(f)
-    lu = left_bc_u.get(f) if lm is None else None
-    lval = lm or lu
+    lm = left_bc_m[f]; lu = left_bc_u[f] if lm is None else None; lval = lm or lu
     if lval is not None:
         x, y = LEFT_X[f], Y_PIX[lval]
         if lm is not None:
-            ax.text(x + MASKED_OFFSET, y, "]", color=left_color, fontsize=12, ha="center", va="center")
+            ax.text(x + MASKED_OFFSET, y, ']', color=left_color, fontsize=12, ha='center', va='center')
         else:
-            ax.plot(x, y, "^", color=left_color, ms=9, mew=1.5, mfc="none")
+            ax.plot(x, y, '^', color=left_color, ms=9, mew=1.5, mfc='none')
 
 st.pyplot(fig)
 
@@ -160,4 +133,4 @@ buf_pdf = io.BytesIO()
 fig.savefig(buf_pdf, format='pdf', bbox_inches='tight', pad_inches=0)
 st.download_button("Download PDF", buf_pdf.getvalue(), "audiogram.pdf", "application/pdf")
 
-st.success("Unmasked BC is synchronized between ears.")
+st.success("Ready! Use buttons to download.")
