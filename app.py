@@ -126,7 +126,7 @@ st.pyplot(fig)
 # ================================
 
 buf = io.BytesIO()
-fig.savefig(buf, format='png', dpi=96, bbox_inches='tight', pad_inches=0)
+fig.savefig(buf, format='png', dpi=192, bbox_inches='tight', pad_inches=0)
 st.download_button("Download PNG", buf.getvalue(), "audiogram.png", "image/png")
 
 buf_pdf = io.BytesIO()
