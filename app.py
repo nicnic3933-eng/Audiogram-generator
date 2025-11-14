@@ -1,11 +1,12 @@
 # app.py
 # Audiogram Generator – High-Res 1060x674 @ 96 dpi
-# Copy-paste = Drag PNG size in Word | Unmasked BC sync
+# Fixed: No 'tostring_rgb' error | Copy-paste = Drag PNG size in Word | Unmasked BC sync
 
 import streamlit as st
 import matplotlib.pyplot as plt
 from PIL import Image
 import io
+import numpy as np
 
 # ================================
 # CONFIG
@@ -16,8 +17,8 @@ AC_FREQS = [250, 500, 1000, 2000, 3000, 4000, 6000, 8000]
 BC_FREQS = [500, 1000, 2000, 4000]
 
 # === HARD-CODED X-COORDINATES (for 1060x674 image) ===
-RIGHT_X = {250: 218, 500: 262, 1000: 317, 2000: 375, 3000: 399, 4000: 432, 6000: 456, 8000: 489}
-LEFT_X  = {250: 752, 500: 798, 1000: 855, 2000: 911, 3000: 935, 4000: 969, 6000: 992, 8000: 1029}
+RIGHT_X = {250: 218, 500: 262, 1000: 317, 2000: 376, 3000: 401, 4000: 434, 6000: 457, 8000: 492}
+LEFT_X  = {250: 754, 500: 801, 1000: 859, 2000: 913, 3000: 938, 4000: 972, 6000: 996, 8000: 1034}
 
 # === HARD-CODED Y-COORDINATES ===
 Y_START = 53
@@ -158,18 +159,26 @@ for f in BC_FREQS:
 st.pyplot(fig, use_container_width=False)
 
 # ================================
-# DOWNLOAD – PNG WITH 96 DPI
+# DOWNLOAD – PNG WITH 96 DPI (FIXED)
 # ================================
 
-# PNG with 96 DPI
-final_png = io.BytesIO()
-pil_img = Image.frombytes('RGB', fig.canvas.get_width_height(), fig.canvas.tostring_rgb())
-pil_img.save(final_png, format='PNG', dpi=(96, 96))
-final_png.seek(0)
+# PNG with 96 DPI (using renderer.buffer_rgba – no tostring_rgb error)
+buf_png = io.BytesIO()
+fig.canvas.draw()
+renderer = fig.canvas.renderer
+rgba = renderer.buffer_rgba()
+width_px, height_px = fig.canvas.get_width_height()
+image_array = np.frombuffer(rgba, dtype=np.uint8).reshape((height_px, width_px, 4))
+# Convert RGBA to RGB
+rgb_array = image_array[:, :, :3]
+
+pil_img = Image.fromarray(rgb_array, mode='RGB')
+pil_img.save(buf_png, format='PNG', dpi=(96, 96))
+buf_png.seek(0)
 
 st.download_button(
     "Download PNG (Same Size in Word)",
-    final_png.getvalue(),
+    buf_png.getvalue(),
     "audiogram.png",
     "image/png"
 )
