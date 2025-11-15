@@ -73,6 +73,14 @@ with col2:
         with c1: left_bc_u[f] = st.number_input(f"unmasked {f} Hz", -10, 120, 10, 5, key=f"l_u_{f}")
         with c2: left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
 
+
+# ================================
+# INSTRUCTION LINE (NEW)
+# ================================
+
+st.markdown("---")
+st.info("**Tip:** Set picture height to 10.5 cm in Microsoft Word after copy-and-paste")
+
 # ================================
 # PLOT
 # ================================
