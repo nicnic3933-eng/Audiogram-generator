@@ -85,7 +85,7 @@ st.info("**Tip:** Set picture height to 10.5 cm in Microsoft Word after copy-and
 # PLOT
 # ================================
 
-fig, ax = plt.subplots(figsize=(width/100, height/100), dpi=100)
+fig, ax = plt.subplots(figsize=(width/100, height/100), dpi=200)
 ax.imshow(bg)
 ax.set_xlim(0, width)
 ax.set_ylim(height, 0)
