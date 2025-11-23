@@ -79,7 +79,7 @@ with col2:
 # ================================
 
 st.markdown("---")
-st.info("**Tip:** Set picture height to 10.5 cm in Microsoft Word after copy-and-paste")
+st.info("**Tip:** Set picture height to 10.8 cm in Microsoft Word after copy-and-paste")
 
 # ================================
 # PLOT
@@ -127,23 +127,18 @@ for f in BC_FREQS:
         else:
             ax.plot(x, y, '^', color=left_color, ms=9, mew=1.5, mfc='none')
 
-# Save with embedded physical DPI so Word pastes at correct size
+st.pyplot(fig)
+
+# ================================
+# DOWNLOAD
+# ================================
+
 buf = io.BytesIO()
-fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0,
-            metadata={'png:phys': '11811 11811 1'})  # 300 dpi in pixels/meter
-buf.seek(0)
-
-# This is what you see and copy from
-st.image(buf, use_column_width=True)
-
-# Download buttons (still work perfectly)
-buf.seek(0)
+fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0)
 st.download_button("Download PNG", buf.getvalue(), "audiogram.png", "image/png")
 
 buf_pdf = io.BytesIO()
 fig.savefig(buf_pdf, format='pdf', bbox_inches='tight', pad_inches=0)
-buf_pdf.seek(0)
 st.download_button("Download PDF", buf_pdf.getvalue(), "audiogram.pdf", "application/pdf")
 
-plt.close(fig)  # good practice
 st.success("Ready! Use buttons to download.")
