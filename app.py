@@ -127,7 +127,10 @@ for f in BC_FREQS:
         else:
             ax.plot(x, y, '^', color=left_color, ms=9, mew=1.5, mfc='none')
 
-st.pyplot(fig)
+buf = io.BytesIO()
+fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0)
+buf.seek(0)
+st.image(buf, use_column_width=True)
 
 # ================================
 # DOWNLOAD
