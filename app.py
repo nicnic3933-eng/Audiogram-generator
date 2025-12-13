@@ -116,7 +116,7 @@ for f in BC_FREQS:
         if rm is not None:
             ax.text(x - MASKED_OFFSET, y, '[', color=right_color, fontsize=12, ha='center', va='center')
         else:
-            ax.plot(x, y, '^', color=right_color, ms=9, mew=1.5, mfc='none')
+            ax.plot(x, y, '^', color=right_color, ms=7, mew=1.5, mfc='none')
     
     # Left
     lm = left_bc_m[f]; lu = left_bc_u[f] if lm is None else None; lval = lm or lu
@@ -125,7 +125,7 @@ for f in BC_FREQS:
         if lm is not None:
             ax.text(x + MASKED_OFFSET, y, ']', color=left_color, fontsize=12, ha='center', va='center')
         else:
-            ax.plot(x, y, '^', color=left_color, ms=9, mew=1.5, mfc='none')
+            ax.plot(x, y, '^', color=left_color, ms=7, mew=1.5, mfc='none')
 
 st.pyplot(fig)
 
