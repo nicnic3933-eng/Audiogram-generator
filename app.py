@@ -42,7 +42,7 @@ st.title("Audiogram Generator")
 # COLOR SCHEME
 # ================================
 
-color_scheme = st.selectbox("Color Scheme", ["Red & Blue (Default)", "Black"], index=0)
+color_scheme = st.selectbox("Color Scheme", ["Black", "Red & Blue (Default)"], index=0)
 use_black = (color_scheme == "Black")
 
 # ================================
