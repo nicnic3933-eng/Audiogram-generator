@@ -21,7 +21,7 @@ LEFT_X  = {250: 457, 500: 485, 1000: 520, 2000: 554, 3000: 569, 4000: 590, 6000:
 
 # Y-AXIS
 Y_SCALE = 1.42
-Y_START = 32
+Y_START = 31
 Y_PIX = {db: Y_START + (db + 10) * Y_SCALE for db in range(-10, 126, 5)}
 
 try:
