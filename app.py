@@ -102,7 +102,7 @@ for ear, ac, color, symbol in [('right', right_ac, right_color, 'o'), ('left', l
     xs = [coord(ear, f, ac[f])[0] for f in AC_FREQS if ac[f] is not None]
     ys = [coord(ear, f, ac[f])[1] for f in AC_FREQS if ac[f] is not None]
     if xs:
-        ax.plot(xs, ys, symbol, color=color, ms=8, mfc='none', mew=1.2)
+        ax.plot(xs, ys, symbol, color=color, ms=8, mfc='none', mew=1)
         ax.plot(xs, ys, '-', color=color, lw=1.0)
 
 # BC – Masked offset: 8px
