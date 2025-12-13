@@ -114,7 +114,7 @@ for f in BC_FREQS:
     if rval is not None:
         x, y = RIGHT_X[f], Y_PIX[rval]
         if rm is not None:
-            ax.text(x - MASKED_OFFSET, y, '[', color=right_color, fontsize=12, ha='center', va='center')
+            ax.text(x - MASKED_OFFSET, y, '[', color=right_color, fontsize=10, ha='center', va='center')
         else:
             ax.plot(x, y, '^', color=right_color, ms=7, mew=1, mfc='none')
     
@@ -123,7 +123,7 @@ for f in BC_FREQS:
     if lval is not None:
         x, y = LEFT_X[f], Y_PIX[lval]
         if lm is not None:
-            ax.text(x + MASKED_OFFSET, y, ']', color=left_color, fontsize=12, ha='center', va='center')
+            ax.text(x + MASKED_OFFSET, y, ']', color=left_color, fontsize=10, ha='center', va='center')
         else:
             ax.plot(x, y, '^', color=left_color, ms=7, mew=1, mfc='none')
 
