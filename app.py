@@ -97,7 +97,7 @@ left_pta = calculate_pta(left_ac)
 st.info("**Tip:** Set picture height to 10.8 cm in Microsoft Word after copy-and-paste for perfect scaling.")
 
 # Second info: PTA display
-pta_text = "**4-Frequency Pure Tone Average (500–3000 Hz):**\n"
+pta_text = "**4-Frequency Pure Tone Average (500, 1000, 2000, 3000 Hz):**\n"
 if right_pta is not None and left_pta is not None:
     pta_text += f"• Right ear: **{right_pta:.0f} dB HL**  |  Left ear: **{left_pta:.0f} dB HL**"
 elif right_pta is not None:
