@@ -42,7 +42,7 @@ st.title("Audiogram Generator")
 # COLOR SCHEME
 # ================================
 
-color_scheme = st.selectbox("Color Scheme", ["Black", "Red & Blue (Default)"], index=0)
+color_scheme = st.selectbox("Color Scheme", ["Black", "Red & Blue"], index=0)
 use_black = (color_scheme == "Black")
 
 # ================================
@@ -73,13 +73,41 @@ with col2:
         with c1: left_bc_u[f] = st.number_input(f"unmasked {f} Hz", -10, 120, 10, 5, key=f"l_u_{f}")
         with c2: left_bc_m[f] = st.number_input(f"masked {f} Hz", -10, 120, None, 5, key=f"l_m_{f}")
 
-
 # ================================
-# INSTRUCTION LINE (NEW)
+# INSTRUCTION & PTA DISPLAY
 # ================================
 
 st.markdown("---")
-st.info("**Tip:** Set picture height to 10.8 cm in Microsoft Word after copy-and-paste")
+
+# Calculate 4-frequency PTA (500, 1000, 2000, 3000 Hz) for AC only
+def calculate_pta(ac_dict):
+    freqs = [500, 1000, 2000, 3000]
+    values = [ac_dict[f] for f in freqs if ac_dict[f] is not None]
+    if len(values) == 4:
+        return sum(values) / 4
+    elif len(values) > 0:
+        return sum(values) / len(values)  # average of available
+    else:
+        return None
+
+right_pta = calculate_pta(right_ac)
+left_pta = calculate_pta(left_ac)
+
+# First info: pasting tip
+st.info("**Tip:** Set picture height to 10.8 cm in Microsoft Word after copy-and-paste for perfect scaling.")
+
+# Second info: PTA display
+pta_text = "**4-Frequency Pure Tone Average (500–3000 Hz):**\n"
+if right_pta is not None and left_pta is not None:
+    pta_text += f"• Right ear: **{right_pta:.0f} dB HL**  |  Left ear: **{left_pta:.0f} dB HL**"
+elif right_pta is not None:
+    pta_text += f"• Right ear: **{right_pta:.0f} dB HL**  |  Left ear: not available"
+elif left_pta is not None:
+    pta_text += f"• Right ear: not available  |  Left ear: **{left_pta:.0f} dB HL**"
+else:
+    pta_text += "• Enter AC values at 500, 1000, 2000, and 3000 Hz to see averages"
+
+st.info(pta_text)
 
 # ================================
 # PLOT
