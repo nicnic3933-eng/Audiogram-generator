@@ -107,7 +107,7 @@ elif left_pta is not None:
 else:
     pta_text += "• Enter AC values at 500, 1000, 2000, and 3000 Hz to see averages"
 
-st.info(pta_text)
+st.warning(pta_text)
 
 # ================================
 # PLOT
